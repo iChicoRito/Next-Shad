@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "roleName": "Administrator",
+    "description": "Full system access with all permissions including user management, settings, and billing",
+    "permissions": "manage_users, manage_roles, manage_settings, view_analytics, manage_billing",
+    "usersAssigned": 3,
+    "status": "Active",
+    "createdAt": "2024-01-15",
+    "lastModified": "2024-08-12"
+  },
+  {
+    "id": 2,
+    "roleName": "Content Manager",
+    "description": "Manages all content including articles, media, and page layouts",
+    "permissions": "create_content, edit_content, publish_content, manage_media",
+    "usersAssigned": 8,
+    "status": "Active",
+    "createdAt": "2024-01-20",
+    "lastModified": "2024-08-10"
+  },
+  {
+    "id": 3,
+    "roleName": "Moderator",
+    "description": "Manages user comments, forum posts, and content moderation",
+    "permissions": "moderate_comments, ban_users, review_content, manage_reports",
+    "usersAssigned": 12,
+    "status": "Active",
+    "createdAt": "2024-02-01",
+    "lastModified": "2024-08-13"
+  },
+  {
+    "id": 4,
+    "roleName": "Analyst",
+    "description": "View-only access to analytics, reports, and performance metrics",
+    "permissions": "view_analytics, export_reports, view_dashboards",
+    "usersAssigned": 5,
+    "status": "Active",
+    "createdAt": "2024-02-15",
+    "lastModified": "2024-08-11"
+  },
+  {
+    "id": 5,
+    "roleName": "Support Specialist",
+    "description": "Handles customer support tickets and user inquiries",
+    "permissions": "view_tickets, respond_tickets, view_users, escalate_issues",
+    "usersAssigned": 15,
+    "status": "Pending",
+    "createdAt": "2024-03-01",
+    "lastModified": "2024-08-09"
+  },
+  {
+    "id": 6,
+    "roleName": "Developer",
+    "description": "Access to development tools, API keys, and technical resources",
+    "permissions": "manage_api_keys, view_logs, access_dev_tools, deploy_code",
+    "usersAssigned": 7,
+    "status": "Active",
+    "createdAt": "2024-03-15",
+    "lastModified": "2024-08-12"
+  },
+  {
+    "id": 7,
+    "roleName": "Billing Manager",
+    "description": "Manages subscriptions, invoices, and payment processing",
+    "permissions": "manage_invoices, process_refunds, view_payments, manage_subscriptions",
+    "usersAssigned": 2,
+    "status": "Inactive",
+    "createdAt": "2024-04-01",
+    "lastModified": "2024-07-20"
+  },
+  {
+    "id": 8,
+    "roleName": "Viewer",
+    "description": "Read-only access to public content and basic information",
+    "permissions": "view_content, view_profile, basic_search",
+    "usersAssigned": 45,
+    "status": "Active",
+    "createdAt": "2024-04-15",
+    "lastModified": "2024-08-13"
+  }
+]
