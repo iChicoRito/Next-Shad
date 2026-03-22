@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -108,7 +109,11 @@ export function PermissionFormDialog({ onAddPermission }: PermissionFormDialogPr
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter permission description" {...field} />
+                    <Textarea
+                      placeholder="Enter permission description"
+                      className="min-h-[100px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,7 +135,6 @@ export function PermissionFormDialog({ onAddPermission }: PermissionFormDialogPr
                     <SelectContent>
                       <SelectItem value="Active">Active</SelectItem>
                       <SelectItem value="Inactive">Inactive</SelectItem>
-                      <SelectItem value="Pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

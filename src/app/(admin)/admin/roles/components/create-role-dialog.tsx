@@ -135,7 +135,6 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
                     <SelectContent>
                       <SelectItem value="Active">Active</SelectItem>
                       <SelectItem value="Inactive">Inactive</SelectItem>
-                      <SelectItem value="Pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

@@ -66,7 +66,7 @@ export default function RolesPage() {
         </div>
       </div>
       {}
-      <div className="@container/main px-4 lg:px-6 mt-8 lg:mt-12">
+      <div className="@container/main px-4 lg:px-6 mt-4 lg:mt-6">
         <DataTable
           roles={roles}
           onDeleteRole={handleDeleteRole}
