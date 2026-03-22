@@ -15,8 +15,8 @@ const signupFormSchema = z
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Please confirm your password'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(8, 'Please confirm your password'),
     terms: z.boolean().refine(val => val === true, 'You must agree to the terms'),
   })
   .refine(data => data.password === data.confirmPassword, {
@@ -141,7 +141,7 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
                 </div>
                 <div className='text-center text-sm'>
                   Already have an account?{' '}
-                  <a href='sign-in' className='underline underline-offset-4'>
+                  <a href='/auth/sign-in' className='underline underline-offset-4'>
                     Sign in
                   </a>
                 </div>

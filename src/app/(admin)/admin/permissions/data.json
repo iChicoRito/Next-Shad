@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "permissionName": "Manage Users",
+    "description": "Full access to create, update, delete users and manage user roles",
+    "status": "Active",
+    "createdAt": "2024-01-15"
+  },
+  {
+    "id": 2,
+    "permissionName": "View Analytics",
+    "description": "Read-only access to analytics dashboards and reports",
+    "status": "Active",
+    "createdAt": "2024-01-20"
+  },
+  {
+    "id": 3,
+    "permissionName": "Manage Settings",
+    "description": "Configure system settings and application preferences",
+    "status": "Active",
+    "createdAt": "2024-02-01"
+  },
+  {
+    "id": 4,
+    "permissionName": "Export Data",
+    "description": "Export system data to CSV, PDF, and other formats",
+    "status": "Active",
+    "createdAt": "2024-02-15"
+  },
+  {
+    "id": 5,
+    "permissionName": "Moderate Content",
+    "description": "Review and moderate user-generated content",
+    "status": "Pending",
+    "createdAt": "2024-03-01"
+  },
+  {
+    "id": 6,
+    "permissionName": "Manage API Keys",
+    "description": "Create, revoke, and manage API keys for integrations",
+    "status": "Active",
+    "createdAt": "2024-03-15"
+  },
+  {
+    "id": 7,
+    "permissionName": "Process Refunds",
+    "description": "Process refunds and manage billing disputes",
+    "status": "Inactive",
+    "createdAt": "2024-04-01"
+  },
+  {
+    "id": 8,
+    "permissionName": "View Logs",
+    "description": "Access system logs and audit trails",
+    "status": "Active",
+    "createdAt": "2024-04-15"
+  }
+]

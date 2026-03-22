@@ -32,4 +32,15 @@ Objective #2:
         - Permission Name
         - Description
         - Status
+
     3). In the datatables, make it displays all the fields for that permissions along with filtrations.
+
+    4). Ensure u must follow the columns and the contents of the form modal.
+
+Objective #3:
+
+    1). Here in the roles, in the action button, add menu for View Details
+
+    2). When click, it shows an dialog that shows the details of that selected rows.
+
+    3). Provide only the code that need a change do not re-write the whole code.

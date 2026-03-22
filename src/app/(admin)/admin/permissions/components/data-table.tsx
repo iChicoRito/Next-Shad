@@ -3,7 +3,7 @@
 // ==================== IMPORTS ====================
 import { useState } from 'react';
 import { type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState, type Row, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
-import { IconChevronDown, IconDotsVertical, IconDownload, IconSearch, IconChevronUp } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconDotsVertical, IconDownload, IconSearch } from '@tabler/icons-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,50 +12,50 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { RoleFormDialog } from './create-role-dialog';
-import { ViewRoleDialog } from './view-role-dialog';
+import { PermissionFormDialog } from './create-permissions-dialog';
+import { ViewPermissionDialog } from './view-permission-dialog';
 
 // ==================== TYPES & INTERFACES ====================
 
-// Role data structure
-interface Role {
-    // Unique identifier for the role
+// Permission data structure
+interface Permission {
+    // Unique identifier for the permission
     id: number;
-    // Display name of the role
-    roleName: string;
-    // Detailed description of the role
+    // Display name of the permission
+    permissionName: string;
+    // Detailed description of the permission
     description: string;
     // Current status (Active, Inactive, Pending)
     status: string;
-    // Creation date of the role
+    // Creation date of the permission
     createdAt: string;
 }
 
-// Form values for role creation/editing
-interface RoleFormValues {
-    // Role display name
-    roleName: string;
-    // Role description
+// Form values for permission creation/editing
+interface PermissionFormValues {
+    // Permission display name
+    permissionName: string;
+    // Permission description
     description: string;
-    // Role status
+    // Permission status
     status: string;
 }
 
 // Props for DataTable component
 interface DataTableProps {
-    // Array of roles to display
-    roles: Role[];
-    // Callback function to delete a role
-    onDeleteRole: (id: number) => void;
-    // Callback function to edit a role
-    onEditRole: (role: Role) => void;
-    // Callback function to add a new role
-    onAddRole: (roleData: RoleFormValues) => void;
+    // Array of permissions to display
+    permissions: Permission[];
+    // Callback function to delete a permission
+    onDeletePermission: (id: number) => void;
+    // Callback function to edit a permission
+    onEditPermission: (permission: Permission) => void;
+    // Callback function to add a new permission
+    onAddPermission: (permissionData: PermissionFormValues) => void;
 }
 
 // ==================== HELPER FUNCTIONS ====================
 
-// Returns appropriate Tailwind classes based on role status
+// Returns appropriate Tailwind classes based on permission status
 const getStatusColor = (status: string): string => {
     switch (status) {
         case 'Active':
@@ -70,14 +70,14 @@ const getStatusColor = (status: string): string => {
 };
 
 // Exact filter function for status column
-const exactFilter = (row: Row<Role>, columnId: string, value: string): boolean => {
+const exactFilter = (row: Row<Permission>, columnId: string, value: string): boolean => {
     return row.getValue(columnId) === value;
 };
 
 // ==================== COMPONENT ====================
 
-// DataTable - Main table component for displaying and managing roles
-export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTableProps) {
+// DataTable - Main table component for displaying and managing permissions
+export function DataTable({ permissions, onDeletePermission, onEditPermission, onAddPermission }: DataTableProps) {
     // ==================== STATE MANAGEMENT ====================
 
     // Sorting state for table columns
@@ -98,14 +98,13 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
     // View dialog open state
     const [viewDialogOpen, setViewDialogOpen] = useState(false);
 
-    // Currently selected role for viewing
-    const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+    // Currently selected permission for viewing
+    const [selectedPermission, setSelectedPermission] = useState<Permission | null>(null);
 
     // ==================== COLUMN DEFINITIONS ====================
 
     // Table column definitions
-    // Defines structure, rendering, and behavior for each column
-    const columns: ColumnDef<Role>[] = [
+    const columns: ColumnDef<Permission>[] = [
         // Selection column (checkbox)
         {
             id: 'select',
@@ -124,13 +123,13 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
             size: 50,
         },
 
-        // Role Name column
+        // Permission Name column
         {
-            accessorKey: 'roleName',
+            accessorKey: 'permissionName',
             header: ({ column }) => {
                 return (
                     <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className='-ml-4 h-8 hover:bg-transparent'>
-                        Role Name
+                        Permission Name
                         {column.getIsSorted() === 'asc' && <IconChevronUp size={16} className='ml-2' />}
                         {column.getIsSorted() === 'desc' && <IconChevronDown size={16} className='ml-2' />}
                         {!column.getIsSorted() && <IconChevronDown size={16} className='ml-2 opacity-50' />}
@@ -138,8 +137,8 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                 );
             },
             cell: ({ row }) => {
-                const roleName = row.getValue('roleName') as string;
-                return <span className='font-medium'>{roleName}</span>;
+                const permissionName = row.getValue('permissionName') as string;
+                return <span className='font-medium'>{permissionName}</span>;
             },
         },
 
@@ -210,7 +209,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
             id: 'actions',
             header: '',
             cell: ({ row }) => {
-                const role = row.original;
+                const permission = row.original;
                 return (
                     <div className='flex items-center'>
                         <DropdownMenu>
@@ -224,16 +223,16 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                                 <DropdownMenuItem
                                     className='cursor-pointer'
                                     onClick={() => {
-                                        setSelectedRole(role);
+                                        setSelectedPermission(permission);
                                         setViewDialogOpen(true);
                                     }}>
                                     View Details
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className='cursor-pointer' onClick={() => onEditRole(role)}>
-                                    Edit Role
+                                <DropdownMenuItem className='cursor-pointer' onClick={() => onEditPermission(permission)}>
+                                    Edit Permission
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem variant='destructive' className='cursor-pointer' onClick={() => onDeleteRole(role.id)}>
+                                <DropdownMenuItem variant='destructive' className='cursor-pointer' onClick={() => onDeletePermission(permission.id)}>
                                     Delete
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -248,7 +247,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
 
     // Create table instance with all configurations
     const table = useReactTable({
-        data: roles,
+        data: permissions,
         columns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -281,7 +280,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                 <div className='flex flex-1 items-center space-x-2'>
                     <div className='relative flex-1 max-w-sm'>
                         <IconSearch size={16} className='absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
-                        <Input placeholder='Search roles...' value={globalFilter ?? ''} onChange={event => setGlobalFilter(String(event.target.value))} className='pl-9' />
+                        <Input placeholder='Search permissions...' value={globalFilter ?? ''} onChange={event => setGlobalFilter(String(event.target.value))} className='pl-9' />
                     </div>
                 </div>
 
@@ -291,7 +290,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                         <IconDownload size={16} />
                         Export
                     </Button>
-                    <RoleFormDialog onAddRole={onAddRole} />
+                    <PermissionFormDialog onAddPermission={onAddPermission} />
                 </div>
             </div>
 
@@ -423,8 +422,8 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                 </div>
             </div>
 
-            {/* View Role Dialog */}
-            <ViewRoleDialog role={selectedRole} open={viewDialogOpen} onOpenChange={setViewDialogOpen} />
+            {/* View Permission Dialog */}
+            <ViewPermissionDialog permission={selectedPermission} open={viewDialogOpen} onOpenChange={setViewDialogOpen} />
         </div>
     );
 }

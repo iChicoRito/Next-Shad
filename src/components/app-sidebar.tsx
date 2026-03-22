@@ -19,7 +19,7 @@ const data = {
       items: [
         {
           title: 'Dashboard',
-          url: '/dashboard',
+          url: '/admin/dashboard',
           icon: IconLayoutDashboard,
         },
       ],
@@ -34,11 +34,11 @@ const data = {
           items: [
             {
               title: 'View Users',
-              url: '/',
+              url: '/admin/',
             },
             {
               title: 'Restricted Users',
-              url: '/',
+              url: '/admin/',
             },
           ],
         },
