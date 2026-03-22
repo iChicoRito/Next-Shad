@@ -1,6 +1,4 @@
 'use client';
-
-// DeleteDialog - confirmation dialog for deleting roles
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { IconAlertTriangle } from '@tabler/icons-react';
