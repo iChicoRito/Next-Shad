@@ -1,11 +1,5 @@
 'use client';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { IconClock } from '@tabler/icons-react';
@@ -51,18 +45,12 @@ export function ViewRoleDialog({ role, open, onOpenChange }: ViewRoleDialogProps
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
-                <DialogTitle className="text-xl font-semibold tracking-tight">
-                  {role.roleName}
-                </DialogTitle>
+                <DialogTitle className="text-xl font-semibold tracking-tight">{role.roleName}</DialogTitle>
                 <DialogDescription className="text-xs mt-0.5">Role Information</DialogDescription>
               </div>
             </div>
             {}
-            <Badge
-              className={cn('px-3 py-1 text-xs font-medium border', getStatusColor(role.status))}
-            >
-              {role.status}
-            </Badge>
+            <Badge className={cn('px-3 py-1 text-xs font-medium border', getStatusColor(role.status))}>{role.status}</Badge>
           </div>
         </DialogHeader>
         {}
@@ -78,12 +66,8 @@ export function ViewRoleDialog({ role, open, onOpenChange }: ViewRoleDialogProps
           <div className="flex items-start gap-2.5 p-3 bg-yellow-50/50 dark:bg-yellow-950/20 rounded-lg border border-yellow-100 dark:border-yellow-900">
             <IconClock size={16} className="text-yellow-600 dark:text-yellow-400 mt-0.5" />
             <div>
-              <p className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
-                Role Management
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Manage permissions and user assignments in the edit section.
-              </p>
+              <p className="text-xs font-medium text-yellow-700 dark:text-yellow-400">Role Management</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Manage permissions and user assignments in the edit section.</p>
             </div>
           </div>
         </div>

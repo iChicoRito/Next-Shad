@@ -1,55 +1,18 @@
 'use client';
 import { useState } from 'react';
-import {
-  type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
-  type Row,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
-  IconChevronDown,
-  IconDotsVertical,
-  IconDownload,
-  IconSearch,
-  IconChevronUp,
-} from '@tabler/icons-react';
+import { type ColumnDef, type ColumnFiltersState, type SortingState, type VisibilityState, type Row, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { IconChevronDown, IconDotsVertical, IconDownload, IconSearch, IconChevronUp } from '@tabler/icons-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RoleFormDialog } from './create-role-dialog';
 import { ViewRoleDialog } from './view-role-dialog';
+import { DeleteDialog } from './delete-role-dialog';
 
 interface Role {
   id: number;
@@ -69,7 +32,7 @@ interface DataTableProps {
   roles: Role[];
   onDeleteRole: (id: number) => void;
   onEditRole: (role: Role) => void;
-  onAddRole: (roleData: RoleFormValues) => void;
+  onAddRole: () => void;
 }
 
 const getStatusColor = (status: string): string => {
@@ -97,28 +60,20 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
   const [globalFilter, setGlobalFilter] = useState('');
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
+
   const columns: ColumnDef<Role>[] = [
     {
       id: 'select',
       header: ({ table }) => (
         <div className="flex items-center justify-center px-2">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && 'indeterminate')
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
-          />
+          <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />
         </div>
       ),
       cell: ({ row }) => (
         <div className="flex items-center justify-center px-2">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
+          <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
         </div>
       ),
       enableSorting: false,
@@ -129,11 +84,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       accessorKey: 'roleName',
       header: ({ column }) => {
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="-ml-4 h-8 hover:bg-transparent"
-          >
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="-ml-4 h-8 hover:bg-transparent">
             Role Name
             {column.getIsSorted() === 'asc' && <IconChevronUp size={16} className="ml-2" />}
             {column.getIsSorted() === 'desc' && <IconChevronDown size={16} className="ml-2" />}
@@ -150,11 +101,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       accessorKey: 'description',
       header: ({ column }) => {
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="-ml-4 h-8 hover:bg-transparent"
-          >
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="-ml-4 h-8 hover:bg-transparent">
             Description
             {column.getIsSorted() === 'asc' && <IconChevronUp size={16} className="ml-2" />}
             {column.getIsSorted() === 'desc' && <IconChevronDown size={16} className="ml-2" />}
@@ -171,11 +118,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       accessorKey: 'status',
       header: ({ column }) => {
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="-ml-4 h-8 hover:bg-transparent"
-          >
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="-ml-4 h-8 hover:bg-transparent">
             Status
             {column.getIsSorted() === 'asc' && <IconChevronUp size={16} className="ml-2" />}
             {column.getIsSorted() === 'desc' && <IconChevronDown size={16} className="ml-2" />}
@@ -197,11 +140,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       accessorKey: 'createdAt',
       header: ({ column }) => {
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="-ml-4 h-8 hover:bg-transparent"
-          >
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="-ml-4 h-8 hover:bg-transparent">
             Created At
             {column.getIsSorted() === 'asc' && <IconChevronUp size={16} className="ml-2" />}
             {column.getIsSorted() === 'desc' && <IconChevronDown size={16} className="ml-2" />}
@@ -242,11 +181,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                   Edit Role
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  variant="destructive"
-                  className="cursor-pointer"
-                  onClick={() => onDeleteRole(role.id)}
-                >
+                <DropdownMenuItem variant="destructive" className="cursor-pointer" onClick={() => handleDeleteClick(role)}>
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -256,6 +191,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       },
     },
   ];
+
   const table = useReactTable({
     data: roles,
     columns,
@@ -276,7 +212,23 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       globalFilter,
     },
   });
+
+  // Handle delete click - open confirmation dialog
+  const handleDeleteClick = (role: Role) => {
+    setRoleToDelete(role);
+    setDeleteDialogOpen(true);
+  };
+
+  // Handle actual delete after confirmation
+  const handleConfirmDelete = () => {
+    if (roleToDelete) {
+      onDeleteRole(roleToDelete.id);
+      setRoleToDelete(null);
+    }
+  };
+
   const statusFilter = table.getColumn('status')?.getFilterValue() as string;
+
   return (
     <div className="w-full space-y-4">
       {}
@@ -284,16 +236,8 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
         {}
         <div className="flex flex-1 items-center space-x-2">
           <div className="relative flex-1 max-w-sm">
-            <IconSearch
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              placeholder="Search roles..."
-              value={globalFilter ?? ''}
-              onChange={(event) => setGlobalFilter(String(event.target.value))}
-              className="pl-9"
-            />
+            <IconSearch size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search roles..." value={globalFilter ?? ''} onChange={(event) => setGlobalFilter(String(event.target.value))} className="pl-9" />
           </div>
         </div>
         {}
@@ -312,12 +256,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
           <Label htmlFor="status-filter" className="text-sm font-medium">
             Status
           </Label>
-          <Select
-            value={statusFilter || ''}
-            onValueChange={(value) =>
-              table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
-            }
-          >
+          <Select value={statusFilter || ''} onValueChange={(value) => table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)}>
             <SelectTrigger className="cursor-pointer w-full" id="status-filter">
               <SelectValue placeholder="Select Status" />
             </SelectTrigger>
@@ -346,12 +285,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                 .filter((column) => column.getCanHide())
                 .map((column) => {
                   return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    >
+                    <DropdownMenuCheckboxItem key={column.id} className="capitalize" checked={column.getIsVisible()} onCheckedChange={(value) => column.toggleVisibility(!!value)}>
                       {column.id}
                     </DropdownMenuCheckboxItem>
                   );
@@ -367,13 +301,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  );
+                  return <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>;
                 })}
               </TableRow>
             ))}
@@ -383,9 +311,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -426,8 +352,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
         </div>
         {}
         <div className="flex-1 text-sm text-muted-foreground hidden sm:block">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         {}
         <div className="flex items-center space-x-6 lg:space-x-8">
@@ -438,28 +363,17 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
             </strong>
           </div>
           <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="cursor-pointer"
-            >
+            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="cursor-pointer">
               Previous
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="cursor-pointer"
-            >
+            <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} className="cursor-pointer">
               Next
             </Button>
           </div>
         </div>
       </div>
       {}
+      <DeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} roleName={roleToDelete?.roleName || ''} onConfirm={handleConfirmDelete} />
       <ViewRoleDialog role={selectedRole} open={viewDialogOpen} onOpenChange={setViewDialogOpen} />
     </div>
   );

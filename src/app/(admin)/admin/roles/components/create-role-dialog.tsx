@@ -1,37 +1,19 @@
 'use client';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IconPlus } from '@tabler/icons-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { createClient } from '@/lib/supabase/client';
 
+// Role form schema
 const roleFormSchema = z.object({
   roleName: z.string().min(2, {
     message: 'Please enter a role name.',
@@ -47,11 +29,14 @@ const roleFormSchema = z.object({
 type RoleFormValues = z.infer<typeof roleFormSchema>;
 
 interface RoleFormDialogProps {
-  onAddRole: (role: RoleFormValues) => void;
+  onAddRole: () => void; // Changed to trigger refresh
 }
 
 export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // ==================== FORM SETUP ====================
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(roleFormSchema),
     defaultValues: {
@@ -60,14 +45,44 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
       status: '',
     },
   });
-  function onSubmit(data: RoleFormValues) {
-    onAddRole(data);
-    form.reset();
-    setOpen(false);
+
+  // ==================== HANDLE SUBMIT ====================
+  async function onSubmit(data: RoleFormValues) {
+    setIsSubmitting(true);
+
+    try {
+      // Create Supabase client
+      const supabase = createClient();
+
+      // Insert new role into database
+      const { error } = await supabase.from('tbl_roles').insert({
+        role_name: data.roleName,
+        description: data.description,
+        status: data.status,
+      });
+
+      if (error) throw error;
+
+      // Success toast
+      toast.success('Role created successfully!');
+
+      // Reset form and close dialog
+      form.reset();
+      setOpen(false);
+
+      // Refresh parent data
+      onAddRole();
+    } catch (error: any) {
+      // Error toast
+      toast.error(error.message || 'Failed to create role');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
+
+  // ==================== RENDER ====================
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {}
       <DialogTrigger asChild>
         <Button className="cursor-pointer gap-2">
           <IconPlus size={18} />
@@ -77,13 +92,11 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Add New Role</DialogTitle>
-          <DialogDescription>
-            Create a new role with permissions. Click save when you&apos;re done.
-          </DialogDescription>
+          <DialogDescription>Create a new role with permissions. Click save when you&apos;re done.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {}
+            {/* role name field */}
             <FormField
               control={form.control}
               name="roleName"
@@ -91,17 +104,14 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
                 <FormItem>
                   <FormLabel>Role Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter role name (e.g., Administrator, Moderator)"
-                      {...field}
-                    />
+                    <Input placeholder="Enter role name (e.g., Administrator, Moderator)" {...field} />
                   </FormControl>
-                  {}
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {}
+
+            {/* description field */}
             <FormField
               control={form.control}
               name="description"
@@ -109,17 +119,14 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Enter role description"
-                      className="min-h-[100px] resize-y"
-                      {...field}
-                    />
+                    <Textarea placeholder="Enter role description" className="min-h-[100px] resize-y" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {}
+
+            {/* status field */}
             <FormField
               control={form.control}
               name="status"
@@ -141,9 +148,10 @@ export function RoleFormDialog({ onAddRole }: RoleFormDialogProps) {
                 </FormItem>
               )}
             />
+
             <DialogFooter>
-              <Button type="submit" className="cursor-pointer">
-                Save Role
+              <Button type="submit" className="cursor-pointer" disabled={isSubmitting}>
+                {isSubmitting ? 'Saving...' : 'Save Role'}
               </Button>
             </DialogFooter>
           </form>
