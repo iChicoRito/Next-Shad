@@ -114,17 +114,30 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
       }
 
       // fetch user role from tbl_users
-      const { data: profile, error: profileError } = await supabase.from('tbl_users').select('role').eq('id', authData.user.id).single();
+      const { data: profile, error: profileError } = await supabase.from('tbl_users').select('role, given_name, surname, status').eq('id', authData.user.id).maybeSingle();
 
       if (profileError) {
         console.error('Profile fetch error:', profileError);
-        // fallback to guest dashboard if profile not found
-        router.push('/guest/dashboard');
-        router.refresh();
+
+        // If profile doesn't exist, create it
+        if (profileError.code === 'PGRST116') {
+          const { error: insertError } = await supabase.from('tbl_users').insert({
+            id: authData.user.id,
+            given_name: authData.user.user_metadata?.given_name || authData.user.email?.split('@')[0] || 'User',
+            surname: authData.user.user_metadata?.surname || '',
+            role: 'guest',
+            status: 'active',
+          });
+
+          if (!insertError) {
+            router.push('/guest/dashboard');
+            router.refresh();
+          }
+        }
         return;
       }
 
-      // role-based redirection
+      // role-based redirection (using role from tbl_users)
       if (profile?.role === 'admin') {
         router.push('/admin/dashboard');
       } else {

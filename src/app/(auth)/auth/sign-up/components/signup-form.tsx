@@ -39,10 +39,9 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
     try {
       setIsLoading(true);
 
-      // create supabase browser client
       const supabase = createClient();
 
-      // step 1: sign up user
+      // Sign up user - trigger will automatically create profile
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -52,7 +51,6 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
             given_name: data.given_name,
             surname: data.surname,
           },
-          // redirect back to sign-in page after confirmation
           emailRedirectTo: `${window.location.origin}/auth/sign-in`,
         },
       });
@@ -66,26 +64,10 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
         return;
       }
 
-      if (!authData.user) {
-        toast.error('Failed to create account');
-        return;
-      }
+      // REMOVE this section - trigger handles it now
+      // const { error: profileError } = await supabase.from('tbl_users').insert({ ... });
 
-      // step 2: insert into public.tbl_users
-      const { error: profileError } = await supabase.from('tbl_users').insert({
-        id: authData.user.id,
-        given_name: data.given_name,
-        surname: data.surname,
-        role: 'guest',
-        status: 'pending',
-      });
-
-      if (profileError) {
-        // if profile insert fails, still show success but log error
-        console.error('Profile creation error:', profileError);
-      }
-
-      // show success screen
+      // Show success screen
       setRegistrationSuccess(true);
       toast.success('Check your email for confirmation link');
       form.reset();
