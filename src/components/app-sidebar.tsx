@@ -34,7 +34,7 @@ const data = {
           items: [
             {
               title: 'View Users',
-              url: '/admin/',
+              url: '/admin/users',
             },
             {
               title: 'Restricted Users',
