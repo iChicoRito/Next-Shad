@@ -21,15 +21,3 @@ ON tbl_roles
 FOR ALL
 USING (true)
 WITH CHECK (true);
-
--- Insert initial data
-INSERT INTO tbl_roles (role_name, description, status) VALUES
-  ('Administrator', 'Full system access with all permissions including user management, settings, and billing', 'Active'),
-  ('Content Manager', 'Manages all content including articles, media, and page layouts', 'Active'),
-  ('Moderator', 'Manages user comments, forum posts, and content moderation', 'Active'),
-  ('Analyst', 'View-only access to analytics, reports, and performance metrics', 'Active'),
-  ('Support Specialist', 'Handles customer support tickets and user inquiries', 'Pending'),
-  ('Developer', 'Access to development tools, API keys, and technical resources', 'Active'),
-  ('Billing Manager', 'Manages subscriptions, invoices, and payment processing', 'Inactive'),
-  ('Viewer', 'Read-only access to public content and basic information', 'Active')
-ON CONFLICT (role_name) DO NOTHING;

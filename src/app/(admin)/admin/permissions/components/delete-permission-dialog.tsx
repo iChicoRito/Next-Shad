@@ -1,4 +1,5 @@
 'use client';
+
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { IconAlertTriangle } from '@tabler/icons-react';
@@ -6,11 +7,12 @@ import { IconAlertTriangle } from '@tabler/icons-react';
 interface DeleteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  permissionName: string;
   roleName: string;
   onConfirm: () => void;
 }
 
-export function DeleteDialog({ open, onOpenChange, roleName, onConfirm }: DeleteDialogProps) {
+export function DeleteDialog({ open, onOpenChange, permissionName, roleName, onConfirm }: DeleteDialogProps) {
   // ==================== HANDLE CONFIRM ====================
   const handleConfirm = () => {
     onConfirm();
@@ -27,9 +29,9 @@ export function DeleteDialog({ open, onOpenChange, roleName, onConfirm }: Delete
               <IconAlertTriangle size={24} className="text-red-600 dark:text-red-400" />
             </div>
           </div>
-          <DialogTitle className="text-center">Delete Role</DialogTitle>
+          <DialogTitle className="text-center">Delete Permission</DialogTitle>
           <DialogDescription className="text-center pt-2">
-            Are you sure you want to delete the role <span className="font-semibold">"{roleName}"</span>?
+            Are you sure you want to delete the permission <span className="font-semibold">"{permissionName}"</span> for role <span className="font-semibold">"{roleName}"</span>?
             <br />
             This action cannot be undone.
           </DialogDescription>

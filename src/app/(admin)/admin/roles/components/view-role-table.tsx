@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { RoleFormDialog } from './create-role-dialog';
 import { ViewRoleDialog } from './view-role-dialog';
 import { DeleteDialog } from './delete-role-dialog';
+import { EditRoleDialog } from './edit-role-dialog';
 
 interface Role {
   id: number;
@@ -61,6 +62,8 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedRoleForEdit, setSelectedRoleForEdit] = useState<Role | null>(null);
   const [roleToDelete, setRoleToDelete] = useState<Role | null>(null);
 
   const columns: ColumnDef<Role>[] = [
@@ -177,7 +180,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
                 >
                   View Details
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={() => onEditRole(role)}>
+                <DropdownMenuItem className="cursor-pointer" onClick={() => handleEditClick(role)}>
                   Edit Role
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -212,6 +215,11 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       globalFilter,
     },
   });
+
+  const handleEditClick = (role: Role) => {
+    setSelectedRoleForEdit(role);
+    setEditDialogOpen(true);
+  };
 
   // Handle delete click - open confirmation dialog
   const handleDeleteClick = (role: Role) => {
@@ -375,6 +383,7 @@ export function DataTable({ roles, onDeleteRole, onEditRole, onAddRole }: DataTa
       {}
       <DeleteDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} roleName={roleToDelete?.roleName || ''} onConfirm={handleConfirmDelete} />
       <ViewRoleDialog role={selectedRole} open={viewDialogOpen} onOpenChange={setViewDialogOpen} />
+      <EditRoleDialog role={selectedRoleForEdit} open={editDialogOpen} onOpenChange={setEditDialogOpen} onRoleUpdated={onAddRole} />
     </div>
   );
 }

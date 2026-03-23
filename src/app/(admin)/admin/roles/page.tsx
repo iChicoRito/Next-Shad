@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { DataTable } from './components/data-table';
+import { DataTable } from './components/view-role-table';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -119,8 +119,8 @@ export default function RolesPage() {
   };
 
   const handleEditRole = (role: Role) => {
-    // Will be implemented in next objective
-    console.log('Edit role:', role);
+    // Edit role is handled by the dialog component
+    // No need for console.log anymore
   };
 
   // ==================== LOADING STATE ====================
