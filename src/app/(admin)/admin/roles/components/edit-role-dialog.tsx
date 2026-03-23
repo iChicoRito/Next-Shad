@@ -76,8 +76,8 @@ export function EditRoleDialog({ role, open, onOpenChange, onRoleUpdated }: Edit
 
         if (allError) throw allError;
 
-        // Fetch permissions assigned to this role
-        const { data: rolePermissions, error: roleError } = await supabase.from('tbl_permission').select('id').eq('role_id', role.id);
+        // Fetch permissions assigned to this role using junction table
+        const { data: rolePermissions, error: roleError } = await supabase.from('tbl_role_permissions').select('permission_id').eq('roles_id', role.id);
 
         if (roleError) throw roleError;
 
@@ -88,7 +88,7 @@ export function EditRoleDialog({ role, open, onOpenChange, onRoleUpdated }: Edit
           status: item.status,
         }));
 
-        const assignedIds = rolePermissions.map((item: any) => item.id);
+        const assignedIds = rolePermissions.map((item: any) => item.permission_id);
 
         setPermissions(mappedPermissions);
         setSelectedPermissions(assignedIds);
@@ -158,14 +158,12 @@ export function EditRoleDialog({ role, open, onOpenChange, onRoleUpdated }: Edit
       const permissionsToAdd = selectedPermissions.filter((id) => !initialPermissions.includes(id));
       const permissionsToRemove = initialPermissions.filter((id) => !selectedPermissions.includes(id));
 
-      // Add new permissions
+      // Add new permissions to junction table
       if (permissionsToAdd.length > 0) {
         const insertPromises = permissionsToAdd.map((permissionId) =>
-          supabase.from('tbl_permission').insert({
-            role_id: role.id,
-            permission_name: permissions.find((p) => p.id === permissionId)?.permissionName || '',
-            description: permissions.find((p) => p.id === permissionId)?.description || '',
-            status: 'Active',
+          supabase.from('tbl_role_permissions').insert({
+            roles_id: role.id,
+            permission_id: permissionId,
           })
         );
 
@@ -176,9 +174,9 @@ export function EditRoleDialog({ role, open, onOpenChange, onRoleUpdated }: Edit
         }
       }
 
-      // Remove permissions
+      // Remove permissions from junction table
       if (permissionsToRemove.length > 0) {
-        const { error: deleteError } = await supabase.from('tbl_permission').delete().eq('role_id', role.id).in('id', permissionsToRemove);
+        const { error: deleteError } = await supabase.from('tbl_role_permissions').delete().eq('roles_id', role.id).in('permission_id', permissionsToRemove);
 
         if (deleteError) throw deleteError;
       }

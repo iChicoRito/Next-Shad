@@ -69,17 +69,30 @@ export function ViewRoleDialog({ role, open, onOpenChange }: ViewRoleDialogProps
       try {
         const supabase = createClient();
 
-        // Fetch permissions assigned to this role
-        const { data, error } = await supabase.from('tbl_permission').select('id, permission_name, description, status').eq('role_id', role.id).order('permission_name');
+        // Fetch permissions assigned to this role using junction table
+        const { data, error } = await supabase
+          .from('tbl_role_permissions')
+          .select(
+            `
+            permission_id,
+            tbl_permission (
+              id,
+              permission_name,
+              description,
+              status
+            )
+          `
+          )
+          .eq('roles_id', role.id);
 
         if (error) throw error;
 
         // Map database fields to frontend fields
-        const mappedPermissions: Permission[] = data.map((item: any) => ({
-          id: item.id,
-          permissionName: item.permission_name,
-          description: item.description || '',
-          status: item.status,
+        const mappedPermissions: Permission[] = (data || []).map((item: any) => ({
+          id: item.tbl_permission.id,
+          permissionName: item.tbl_permission.permission_name,
+          description: item.tbl_permission.description || '',
+          status: item.tbl_permission.status,
         }));
 
         setPermissions(mappedPermissions);

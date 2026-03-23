@@ -112,23 +112,33 @@ export function PermissionFormDialog({ onAddPermission }: PermissionFormDialogPr
     try {
       const supabase = createClient();
 
-      // Insert all permissions in parallel
-      const insertPromises = data.permissions.map((permission) =>
-        supabase.from('tbl_permission').insert({
-          role_id: parseInt(permission.roleId),
-          permission_name: permission.permissionName,
-          description: permission.description,
-          status: permission.status,
-        })
-      );
+      // First create permissions then assign to roles
+      const insertPromises = data.permissions.map(async (permission) => {
+        // Insert permission without role_id
+        const { data: permissionData, error: permissionError } = await supabase
+          .from('tbl_permission')
+          .insert({
+            permission_name: permission.permissionName,
+            description: permission.description,
+            status: permission.status,
+          })
+          .select('id')
+          .single();
 
-      const results = await Promise.all(insertPromises);
+        if (permissionError) throw permissionError;
 
-      // Check for any errors
-      const errors = results.filter((result) => result.error);
-      if (errors.length > 0) {
-        throw new Error(errors[0].error?.message || 'Failed to create permissions');
-      }
+        // Then assign to role in junction table
+        const { error: assignmentError } = await supabase.from('tbl_role_permissions').insert({
+          roles_id: parseInt(permission.roleId),
+          permission_id: permissionData.id,
+        });
+
+        if (assignmentError) throw assignmentError;
+
+        return true;
+      });
+
+      await Promise.all(insertPromises);
 
       // Success toast
       toast.success(`${data.permissions.length} permission(s) created successfully!`);

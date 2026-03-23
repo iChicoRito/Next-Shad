@@ -28,18 +28,20 @@ export default function PermissionsPage() {
       setLoading(true);
       const supabase = createClient();
 
-      // Fetch permissions with role information
+      // Fetch permissions with role information using many-to-many junction
       const { data, error } = await supabase
         .from('tbl_permission')
         .select(
           `
           id,
-          role_id,
           permission_name,
           description,
           status,
           created_at,
-          tbl_roles (role_name)
+          tbl_role_permissions (
+            roles_id,
+            tbl_roles (id, role_name)
+          )
         `
         )
         .order('created_at', { ascending: false });
@@ -47,15 +49,38 @@ export default function PermissionsPage() {
       if (error) throw error;
 
       // Map database fields to frontend fields
-      const mappedPermissions: Permission[] = data.map((item: any) => ({
-        id: item.id,
-        roleId: item.role_id,
-        roleName: item.tbl_roles?.role_name || 'Unknown',
-        permissionName: item.permission_name,
-        description: item.description || '',
-        status: item.status,
-        createdAt: new Date(item.created_at).toISOString().split('T')[0],
-      }));
+      // A permission can now have multiple roles
+      const mappedPermissions: Permission[] = [];
+
+      data.forEach((item: any) => {
+        const roleAssignments = item.tbl_role_permissions || [];
+
+        // If no roles assigned, create entry with "Unassigned"
+        if (roleAssignments.length === 0) {
+          mappedPermissions.push({
+            id: item.id,
+            roleId: 0,
+            roleName: 'Unassigned',
+            permissionName: item.permission_name,
+            description: item.description || '',
+            status: item.status,
+            createdAt: new Date(item.created_at).toISOString().split('T')[0],
+          });
+        } else {
+          // Create separate entry for each role this permission is assigned to
+          roleAssignments.forEach((assignment: any) => {
+            mappedPermissions.push({
+              id: item.id,
+              roleId: assignment.roles_id,
+              roleName: assignment.tbl_roles?.role_name || 'Unknown',
+              permissionName: item.permission_name,
+              description: item.description || '',
+              status: item.status,
+              createdAt: new Date(item.created_at).toISOString().split('T')[0],
+            });
+          });
+        }
+      });
 
       setPermissions(mappedPermissions);
     } catch (error: any) {
