@@ -114,20 +114,21 @@ export function PermissionFormDialog({ onAddPermission }: PermissionFormDialogPr
 
       // First create permissions then assign to roles
       const insertPromises = data.permissions.map(async (permission) => {
-        // Insert permission without role_id
+        // Insert permission WITH role_id (primary role reference)
         const { data: permissionData, error: permissionError } = await supabase
           .from('tbl_permission')
           .insert({
             permission_name: permission.permissionName,
             description: permission.description,
             status: permission.status,
+            role_id: parseInt(permission.roleId), // Set the direct FK reference
           })
           .select('id')
           .single();
 
         if (permissionError) throw permissionError;
 
-        // Then assign to role in junction table
+        // Then assign to role in junction table (for many-to-many)
         const { error: assignmentError } = await supabase.from('tbl_role_permissions').insert({
           roles_id: parseInt(permission.roleId),
           permission_id: permissionData.id,
