@@ -8,14 +8,14 @@ import { IconMail, IconCalendar, IconUser, IconShield, IconClock } from '@tabler
 import { cn } from '@/lib/utils';
 
 interface User {
-  id: number;
+  id: string;
   surname: string;
-  givenName: string;
+  given_name: string;
   email: string;
   status: string;
   role: string;
-  joinedDate: string;
-  lastLogin: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface ViewUsersDialogProps {
@@ -27,13 +27,11 @@ interface ViewUsersDialogProps {
 // getStatusColor - returns status badge color classes
 const getStatusColor = (status: string): string => {
   switch (status) {
-    case 'Active':
+    case 'active':
       return 'bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400 border-green-200 dark:border-green-800';
-    case 'Pending':
+    case 'pending':
       return 'bg-yellow-50 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800';
-    case 'Error':
-      return 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border-red-200 dark:border-red-800';
-    case 'Inactive':
+    case 'inactive':
       return 'bg-gray-50 text-gray-700 dark:bg-gray-900/40 dark:text-gray-400 border-gray-200 dark:border-gray-800';
     default:
       return 'bg-gray-50 text-gray-700 dark:bg-gray-900/40 dark:text-gray-400 border-gray-200 dark:border-gray-800';
@@ -43,16 +41,10 @@ const getStatusColor = (status: string): string => {
 // getRoleColor - returns role badge color classes
 const getRoleColor = (role: string): string => {
   switch (role) {
-    case 'Admin':
+    case 'admin':
       return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-    case 'Editor':
+    case 'guest':
       return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-    case 'Author':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-    case 'Maintainer':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-    case 'Subscriber':
-      return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
     default:
       return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
   }
@@ -60,7 +52,7 @@ const getRoleColor = (role: string): string => {
 
 // getFullName - combines surname and given name
 const getFullName = (user: User): string => {
-  return `${user.givenName} ${user.surname}`;
+  return `${user.given_name} ${user.surname}`;
 };
 
 export function ViewUsersDialog({ user, open, onOpenChange }: ViewUsersDialogProps) {
@@ -141,15 +133,13 @@ export function ViewUsersDialog({ user, open, onOpenChange }: ViewUsersDialogPro
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Joined Date</p>
                 <div className="flex items-center gap-2">
-                  <IconCalendar size={14} className="text-muted-foreground" />
-                  <p className="text-sm">{user.joinedDate}</p>
+                  <p className="text-sm">{new Date(user.created_at).toLocaleDateString()}</p>
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Last Login</p>
+                <p className="text-xs text-muted-foreground">Last Updated</p>
                 <div className="flex items-center gap-2">
-                  <IconClock size={14} className="text-muted-foreground" />
-                  <p className="text-sm">{user.lastLogin}</p>
+                  <p className="text-sm">{new Date(user.updated_at).toLocaleDateString()}</p>
                 </div>
               </div>
             </div>

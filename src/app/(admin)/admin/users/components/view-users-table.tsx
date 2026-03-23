@@ -13,23 +13,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CreateUsersDialog } from './create-users-dialog';
 import { ViewUsersDialog } from './view-users-dialog';
 import { DeleteUsersDialog } from './delete-users-dialog';
 
 // ==================== TYPES ====================
 interface User {
-  id: number;
+  id: string;
   surname: string;
-  givenName: string;
+  given_name: string;
   email: string;
   status: string;
   role: string;
-  joinedDate: string;
-  lastLogin: string;
+  created_at: string;
+  updated_at: string;
 }
 
-interface UserFormValues {
+interface CreateUserFormValues {
   surname: string;
   givenName: string;
   email: string;
@@ -41,12 +40,11 @@ interface UserFormValues {
 
 interface DataTableProps {
   users: User[];
-  onDeleteUser: (id: number) => void;
+  onDeleteUser: (id: string) => void;
   onEditUser: (user: User) => void;
-  onAddUser: (userData: UserFormValues) => void;
 }
 
-export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTableProps) {
+export function DataTable({ users, onDeleteUser, onEditUser }: DataTableProps) {
   // ==================== STATE ====================
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -62,13 +60,11 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
   // getStatusColor - returns badge color based on status
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Active':
+      case 'active':
         return 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20';
-      case 'Pending':
+      case 'pending':
         return 'text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20';
-      case 'Error':
-        return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
-      case 'Inactive':
+      case 'inactive':
         return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20';
       default:
         return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20';
@@ -78,16 +74,10 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
   // getRoleColor - returns badge color based on role
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'Admin':
+      case 'admin':
         return 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/20';
-      case 'Editor':
+      case 'guest':
         return 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20';
-      case 'Author':
-        return 'text-yellow-600 bg-yellow-50 dark:text-yellow-400 dark:bg-yellow-900/20';
-      case 'Maintainer':
-        return 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-900/20';
-      case 'Subscriber':
-        return 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/20';
       default:
         return 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-900/20';
     }
@@ -95,12 +85,12 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
 
   // getFullName - combines surname and given name
   const getFullName = (user: User) => {
-    return `${user.givenName} ${user.surname}`;
+    return `${user.given_name} ${user.surname}`;
   };
 
   // getAvatarInitials - generates initials from name
   const getAvatarInitials = (user: User) => {
-    return `${user.givenName[0]}${user.surname[0]}`.toUpperCase();
+    return `${user.given_name[0]}${user.surname[0]}`.toUpperCase();
   };
 
   // exactFilter - exact match filter for select dropdowns
@@ -151,7 +141,7 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
           </div>
         );
       },
-      accessorFn: (row) => `${row.givenName} ${row.surname}`,
+      accessorFn: (row) => `${row.given_name} ${row.surname}`,
       sortingFn: 'text',
     },
     {
@@ -181,11 +171,11 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
       filterFn: exactFilter,
     },
     {
-      accessorKey: 'joinedDate',
+      accessorKey: 'created_at',
       header: 'Joined Date',
       cell: ({ row }) => {
-        const date = row.getValue('joinedDate') as string;
-        return <span className="text-sm">{date}</span>;
+        const date = row.getValue('created_at') as string;
+        return <span className="text-sm">{new Date(date).toLocaleDateString()}</span>;
       },
     },
     {
@@ -276,7 +266,6 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
             <IconDownload size={18} className="mr-2" />
             Export
           </Button>
-          <CreateUsersDialog onAddUser={onAddUser} />
         </div>
       </div>
 
@@ -292,11 +281,8 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="Admin">Admin</SelectItem>
-              <SelectItem value="Author">Author</SelectItem>
-              <SelectItem value="Editor">Editor</SelectItem>
-              <SelectItem value="Maintainer">Maintainer</SelectItem>
-              <SelectItem value="Subscriber">Subscriber</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="guest">Guest</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -312,7 +298,6 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="Active">Active</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Error">Error</SelectItem>
               <SelectItem value="Inactive">Inactive</SelectItem>
             </SelectContent>
           </Select>
@@ -421,7 +406,7 @@ export function DataTable({ users, onDeleteUser, onEditUser, onAddUser }: DataTa
       </div>
       {/* dialogs */}
       <ViewUsersDialog user={selectedUser} open={viewDialogOpen} onOpenChange={setViewDialogOpen} />
-      <DeleteUsersDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} userName={userToDelete ? `${userToDelete.givenName} ${userToDelete.surname}` : ''} onConfirm={handleConfirmDelete} />
+      <DeleteUsersDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen} userName={userToDelete ? `${userToDelete.given_name} ${userToDelete.surname}` : ''} onConfirm={handleConfirmDelete} />
     </div>
   );
 }

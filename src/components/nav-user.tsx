@@ -1,10 +1,10 @@
 'use client';
 
-import { CreditCard, EllipsisVertical, LogOut, BellDot, CircleUser } from 'lucide-react';
+import { IconCreditCard, IconDots, IconBell, IconUserCircle, IconLogout } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { IconUserFilled, IconLogout } from '@tabler/icons-react';
+import { IconUserFilled } from '@tabler/icons-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { createClient } from '@/lib/supabase/client';
@@ -56,7 +56,7 @@ export function NavUser({
                 <span className="truncate font-medium">{user.name}</span>
                 <span className="text-muted-foreground truncate text-xs">{user.email}</span>
               </div>
-              <EllipsisVertical className="ml-auto size-4" />
+              <IconDots className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg" side={isMobile ? 'bottom' : 'right'} align="end" sideOffset={4}>
@@ -75,26 +75,26 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href="/">
-                  <CircleUser />
+                  <IconUserCircle size={18} className="mr-2" />
                   Account
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href="/">
-                  <CreditCard />
+                  <IconCreditCard size={18} className="mr-2" />
                   Billing
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href="/">
-                  <BellDot />
+                  <IconBell size={18} className="mr-2" />
                   Notifications
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-              <IconLogout stroke={2} />
+              <IconLogout size={18} className="mr-2" />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
