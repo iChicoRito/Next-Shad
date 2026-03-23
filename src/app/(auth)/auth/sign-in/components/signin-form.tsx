@@ -113,8 +113,24 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
         return;
       }
 
-      // redirect to dashboard on success
-      router.push('/dashboard');
+      // fetch user role from tbl_users
+      const { data: profile, error: profileError } = await supabase.from('tbl_users').select('role').eq('id', authData.user.id).single();
+
+      if (profileError) {
+        console.error('Profile fetch error:', profileError);
+        // fallback to guest dashboard if profile not found
+        router.push('/guest/dashboard');
+        router.refresh();
+        return;
+      }
+
+      // role-based redirection
+      if (profile?.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/guest/dashboard');
+      }
+
       router.refresh();
     } catch (error: any) {
       toast.error(error.message || 'Something went wrong');
