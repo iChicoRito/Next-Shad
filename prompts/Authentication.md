@@ -33,3 +33,16 @@ Objective #3: Fix the Redirection
     2). When I logged out in the admin side, then go back, i can't get through it and that's right, but in the "guest" role when i logged out and go back, i can still access which is wrong.
 
     3). Give summary first before execution of the code. Wait for the Go command.
+
+
+Objective #4:
+
+    1). Add a column contact_number in tbl_users. (Already had no need to add)
+
+    2). I noticed that even though I verified the email, the status not changed into active, it still pending. What I wanted here that when the user clicks the verification link on their email, their status from pending to active.
+
+    3). Give summary first before execution of the code. Wait for the Go command.
+
+Objective #5
+
+    1). When the user tried to sign in with status pending or inactive, the system wont allow user to sign-in.

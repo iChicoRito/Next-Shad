@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider defaultTheme="system" storageKey="nextjs-ui-theme">
           <SidebarConfigProvider>
             {children}
-            <Toaster position="bottom-right" richColors theme="system" />
+            <Toaster position="bottom-right" richColors closeButton theme="system" />
           </SidebarConfigProvider>
         </ThemeProvider>
       </body>

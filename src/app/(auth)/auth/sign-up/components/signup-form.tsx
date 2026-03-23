@@ -8,7 +8,14 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { IconMailCheck } from '@tabler/icons-react';
 import { signUpSchema, SignUpValues } from '@/lib/validations/auth.schema';
@@ -93,9 +100,16 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
                 We've sent a confirmation link to <strong>{form.getValues('email')}</strong>
               </CardDescription>
               <div className="mt-4 p-4 bg-muted rounded-lg text-sm">
-                <p className="text-muted-foreground">Please click the link in your email to confirm your account. After confirmation, you can sign in to your account.</p>
+                <p className="text-muted-foreground">
+                  Please click the link in your email to confirm your account. After confirmation,
+                  you can sign in to your account.
+                </p>
               </div>
-              <Button variant="outline" className="mt-4 w-full" onClick={() => (window.location.href = '/auth/sign-in')}>
+              <Button
+                variant="outline"
+                className="mt-4 w-full"
+                onClick={() => (window.location.href = '/auth/sign-in')}
+              >
                 Go to Sign In
               </Button>
             </div>
@@ -211,9 +225,15 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
                     render={({ field }) => (
                       <FormItem className="flex items-start space-x-2">
                         <FormControl>
-                          <Checkbox checked={field.value} onCheckedChange={field.onChange} className="mt-0.5" />
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="mt-0.5"
+                          />
                         </FormControl>
-                        <FormLabel className="text-sm font-normal">I agree to the terms of service and privacy policy</FormLabel>
+                        <FormLabel className="text-sm font-normal">
+                          I agree to the terms of service and privacy policy
+                        </FormLabel>
                       </FormItem>
                     )}
                   />
@@ -234,7 +254,8 @@ export function SignupForm1({ className, ...props }: React.ComponentProps<'div'>
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );

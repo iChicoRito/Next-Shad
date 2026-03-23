@@ -9,7 +9,14 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { IconBrandGoogleFilled, IconMailCheck } from '@tabler/icons-react';
 import { signInSchema, SignInValues } from '@/lib/validations/auth.schema';
 import { createClient } from '@/lib/supabase/client';
@@ -58,8 +65,18 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
             if (error) throw error;
 
             if (data.user) {
+              // wait a moment for session to fully establish
+              await new Promise((resolve) => setTimeout(resolve, 500));
+
               // update user status from pending to active
-              await supabase.from('tbl_users').update({ status: 'active' }).eq('id', data.user.id);
+              const { error: updateError } = await supabase
+                .from('tbl_users')
+                .update({ status: 'active', updated_at: new Date().toISOString() })
+                .eq('id', data.user.id);
+
+              if (updateError) {
+                console.error('Failed to update status:', updateError);
+              }
 
               // clean up URL
               window.history.replaceState({}, '', '/auth/sign-in');
@@ -113,8 +130,12 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
         return;
       }
 
-      // fetch user role from tbl_users
-      const { data: profile, error: profileError } = await supabase.from('tbl_users').select('role, given_name, surname, status').eq('id', authData.user.id).maybeSingle();
+      // fetch user role and status from tbl_users
+      const { data: profile, error: profileError } = await supabase
+        .from('tbl_users')
+        .select('role, given_name, surname, status')
+        .eq('id', authData.user.id)
+        .maybeSingle();
 
       if (profileError) {
         console.error('Profile fetch error:', profileError);
@@ -123,7 +144,10 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
         if (profileError.code === 'PGRST116') {
           const { error: insertError } = await supabase.from('tbl_users').insert({
             id: authData.user.id,
-            given_name: authData.user.user_metadata?.given_name || authData.user.email?.split('@')[0] || 'User',
+            given_name:
+              authData.user.user_metadata?.given_name ||
+              authData.user.email?.split('@')[0] ||
+              'User',
             surname: authData.user.user_metadata?.surname || '',
             role: 'guest',
             status: 'active',
@@ -137,6 +161,23 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
         return;
       }
 
+      // ==================== CHECK USER STATUS ====================
+      // Only allow active users to sign in
+      if (profile?.status !== 'active') {
+        // Sign out the user immediately
+        await supabase.auth.signOut();
+
+        if (profile?.status === 'pending') {
+          toast.error('Please verify your email address before signing in.');
+        } else if (profile?.status === 'inactive') {
+          toast.error('Your account has been deactivated. Please contact support.');
+        } else {
+          toast.error('Account not activated. Please check your email.');
+        }
+        return;
+      }
+
+      // ==================== ROLE-BASED REDIRECTION ====================
       // role-based redirection (using role from tbl_users)
       if (profile?.role === 'admin') {
         router.push('/admin/dashboard');
@@ -211,7 +252,10 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
                         <FormItem>
                           <div className="flex items-center">
                             <FormLabel>Password</FormLabel>
-                            <a href="/auth/forgot-password" className="ml-auto text-sm underline-offset-4 hover:underline">
+                            <a
+                              href="/auth/forgot-password"
+                              className="ml-auto text-sm underline-offset-4 hover:underline"
+                            >
                               Forgot your password?
                             </a>
                           </div>
@@ -228,7 +272,12 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
                     </Button>
 
                     {/* google login button */}
-                    <Button variant="outline" className="w-full cursor-pointer gap-2" type="button" onClick={handleGoogleLogin}>
+                    <Button
+                      variant="outline"
+                      className="w-full cursor-pointer gap-2"
+                      type="button"
+                      onClick={handleGoogleLogin}
+                    >
                       <IconBrandGoogleFilled size={18} />
                       Login with Google
                     </Button>
@@ -246,7 +295,8 @@ export function LoginForm1({ className, ...props }: React.ComponentProps<'div'>)
         </CardContent>
       </Card>
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our <a href="#">Terms of Service</a> and{' '}
+        <a href="#">Privacy Policy</a>.
       </div>
     </div>
   );
